@@ -3,7 +3,7 @@ from email import message_from_file
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
-import os
+import os, json, string
 
 bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher(bot)
@@ -34,8 +34,17 @@ async def oil_bay_comand(message : types.Message):
 
 @dp.message_handler()    #декоратор события написания в чат
 async def echo_send(message : types.Message):    #асинхронная функция ловит любые текстовые сообщения
-    if message.text == 'Привет':
-        await message.answer('Добрый вечер!')
+    if {i.lower().translate(str.maketrans('', '', string.punctuation)) for i in message.text.split(' ')}\
+        .intersection(set(json.load(open('mat.json')))) != set():
+        await message.reply('Матетирся запрещено!')
+        await message.delete()
+#lower перевод в нижний регистр
+#string.punctuation - список всех знаков препинания, которые убираем из завуальрованного мата "жо!па"
+
+
+    #if message.text == 'Привет':
+        #await message.answer('Добрый вечер!')
+
     #await message.answer(message.text)      #Способ №1: из потока ждём сообщение и отправляем ответ
     #await message.reply(message.text)        #Способ №2: с упоминание сообщения на которое отвечает бот (цитирование)
     #await bot.send_message(message.from_user.id, message.text)      ##Способ №3: отправить сообщение в личку, сработает если пользователь писал боту ранее
