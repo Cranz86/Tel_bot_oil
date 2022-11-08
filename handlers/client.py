@@ -3,6 +3,7 @@
 from aiogram import Dispatcher, types
 from create_bot import dp, bot
 from keyboards import kb_client
+from aiogram.types import ReplyKeyboardRemove
 
 #@dp.message_handler(commands=['start', 'help'])     #обязательные команды для бота
 async def command_start(message : types.Message):
@@ -18,10 +19,10 @@ async def oil_open_command(message : types.Message):
 
 #@dp.message_handler(commands=['Где_заказать'])
 async def oil_bay_comand(message : types.Message):
-    await bot.send_message(message.from_user.id, 'Маркетплейсы: Сбер, Яндекс, OZON, WB')
+    await bot.send_message(message.from_user.id, 'Маркетплейсы: Сбер, Яндекс, OZON, WB', reply_markup=ReplyKeyboardRemove())
 
 
 def register_handlers_client(dp : Dispatcher):
     dp.register_message_handler(command_start, commands=['start', 'help'])      #вместо декоратора обязательных команд
-    dp.register_message_handler(oil_open_command, commands=['Режим работы'])
-    dp.register_message_handler(oil_bay_comand, commands=['Купить'])
+    dp.register_message_handler(oil_open_command, commands=['Оператора_Online'])
+    dp.register_message_handler(oil_bay_comand, commands=['Где_заказать'])
