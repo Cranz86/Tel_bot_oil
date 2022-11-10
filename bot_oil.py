@@ -14,5 +14,6 @@ from handlers import client, admin, other
 
 client.register_handlers_client(dp)
 other.register_handlers_other(dp)       #важно импортировать последним, что бы работали команды (echo)
+admin.register_handlers_admin(dp)
 
 executor.start_polling(dp, skip_updates=True, on_startup=on_startup)    #skip_updates=True пропускаем сообщение которые пришли в офлайне

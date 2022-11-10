@@ -1,6 +1,7 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import types
+from create_bot import dp
 
 class FSMAdmin(StatesGroup):
     sts = State()
@@ -9,13 +10,13 @@ class FSMAdmin(StatesGroup):
     need = State()
 
 #Страт диолога для запроса подбора масла
-@dp.message.handler(commands='Подобрать масло', State=None)
+#@dp.message.handler(commands='Подобрать масло', State=None)
 async def cm_start(message : types.Message):
     await FSMAdmin.auto.set()
     await message.reply('Загрузите фото СТС')
 
 #Ловим первый ответ от пользователя и записываем в базу
-@dp.message_handler(content_types=['sts'], state=FSMAdmin.sts)
+#@dp.message_handler(content_types=['sts'], state=FSMAdmin.sts)
 async def load_sts(message: types.Message, state: FSMContext):
     async with state.proxy() as data:       #словарь хранения данных
         data['sts'] = message.photo[0].file_id     # присваеваем уникальный айди номер, для хранения в базе
@@ -23,7 +24,7 @@ async def load_sts(message: types.Message, state: FSMContext):
     await message.reply('Сажевый фильтр (DPF) установлен?')
 
 #Получаем второй ответ
-@dp.message_handler(State=FSMAdmin.dpf)
+#@dp.message_handler(State=FSMAdmin.dpf)
 async def load_dpf(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['dpf'] = message.text
@@ -31,7 +32,7 @@ async def load_dpf(message: types.Message, state: FSMContext):
     await message.reply('Какое масло использовали занее?')
 
 #Получаем третий ответ
-@dp.message_handler(State=FSMAdmin.oldoil)
+#@dp.message_handler(State=FSMAdmin.oldoil)
 async def load_oldoil(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['oldoil'] = message.text
@@ -39,7 +40,7 @@ async def load_oldoil(message: types.Message, state: FSMContext):
     await message.reply('Какое масло хотите сейчас?')
 
 #Получаем четвертый ответ
-@dp.message_handler(State=FSMAdmin.need)
+#@dp.message_handler(State=FSMAdmin.need)
 async def load_need(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['need'] = message.text
@@ -48,9 +49,9 @@ async def load_need(message: types.Message, state: FSMContext):
         await message.reply(str(data))
     await state.finish()
 
-#Регестрируем хендлеры
+#Регестрируем хендлеры. Заменяем декораторы на общую функцию
 def register_handlers_admin(dp : Dispatcher):
-    dp.register_message_handler(cm_start, commands=['Создать запрос'], State-None)
+    dp.register_message_handler(cm_start, commands=['Создать запрос'], State=None)
     dp.register_message_handler(load_sts, content_types=['sts'], state=FSMAdmin.sts)
     dp.register_message_handler(load_dpf, state=FSMAdmin.dpf)
     dp.register_message_handler(load_oldoil, state=FSMAdmin.oldoil)
